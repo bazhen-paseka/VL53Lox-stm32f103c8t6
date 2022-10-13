@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+	#include <string.h>
+	#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+	#define		UART_DEBUG &huart1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,7 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+	void UartDebug(char* _text) ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -89,6 +91,14 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	char		debugString[0XFF]	= { 0 } ;
+	sprintf(debugString,"\r\n\r\n\tVL-53-LOX stm32f103c8t6 \r\n" ) ;
+	UartDebug(debugString);
+	#define 	DATE_as_int_str 	(__DATE__)
+	#define 	TIME_as_int_str 	(__TIME__)
+	sprintf(debugString,"\tBuild: %s. Time: %s.\r\n" ,	DATE_as_int_str , TIME_as_int_str ) ;
+	UartDebug(debugString);
+	//HAL_Delay(100);
 
   /* USER CODE END 2 */
 
@@ -143,7 +153,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void UartDebug(char* _text) {
+	HAL_UART_Transmit(UART_DEBUG, (uint8_t*)_text, strlen(_text), 100);
+} //***********************************************************************
 /* USER CODE END 4 */
 
 /**
