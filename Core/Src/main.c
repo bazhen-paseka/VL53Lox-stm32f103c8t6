@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 	#include <string.h>
 	#include "stdio.h"
+	#include "i2c_techmaker_sm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,7 +101,38 @@ int main(void)
 	#define 	TIME_as_int_str 	(__TIME__)
 	sprintf(debugString,"\tBuild: %s. Time: %s.\r\n" ,	DATE_as_int_str , TIME_as_int_str ) ;
 	UartDebug(debugString);
-	Scan_I2C_to_UART();
+
+	I2Cdev_init(&hi2c1);
+	I2C_ScanBusFlow(&hi2c1, &huart1);
+
+	#define ADR	0x29
+	uint8_t vl53[10]  ={0};
+
+	I2Cdev_readBytes( ADR, 0 , 4,vl53, 100);
+	sprintf(debugString,"0x00: %d %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3] ) ;
+	UartDebug(debugString);
+
+	I2Cdev_readBytes( ADR, 0xA , 4,vl53, 100);
+	sprintf(debugString,"0x0A: %d %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3]  ) ;
+	UartDebug(debugString);
+
+	I2Cdev_readBytes( ADR, 0x8A , 4,vl53, 100);
+	sprintf(debugString,"I2C adr: %x %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3]  ) ;
+	UartDebug(debugString);
+
+	I2Cdev_readBytes( ADR, 0xC0 , 4,vl53, 100);
+	sprintf(debugString,"MODEL_ID: %x %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3]  ) ;
+	UartDebug(debugString);
+
+	I2Cdev_readBytes( ADR, 0xC2 , 4,vl53, 100);
+	sprintf(debugString,"REVISION_ID: %x %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3]  ) ;
+	UartDebug(debugString);
+
+//	I2Cdev_readBytes( ADR, 0x8A , 4,vl53, 100);
+//	sprintf(debugString,"I2C adr: %x %d %d %d\r\n" ,	vl53[0], vl53[1],vl53[2],vl53[3]  ) ;
+//	UartDebug(debugString);
+
+	//Scan_I2C_to_UART();
 	//HAL_Delay(100);
 
   /* USER CODE END 2 */
@@ -109,6 +141,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		uint8_t value[0xFF]  ={0};
+		I2Cdev_readBytes( ADR, 0 , 0xff, value, 100);
+	  for (int i=50; i<100; i++) {
+			sprintf(debugString,"%02x " ,value[i] ) ;
+			UartDebug(debugString);
+	  }
+	  sprintf(debugString,"\r" ) ;
+	  			UartDebug(debugString);
+	  HAL_Delay(100);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
